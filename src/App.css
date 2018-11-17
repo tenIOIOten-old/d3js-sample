@@ -32,12 +32,12 @@
 }
 
 
-.node {
+.nodes {
   stroke: #000;
   stroke-width: 1.5px;
 }
 
-.link {
+.links {
   stroke: #999;
   stroke-width: 1.5px;
 }

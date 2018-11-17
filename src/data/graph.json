@@ -1,47 +1,38 @@
 {
   "nodes": [
     {
-      "id": 0,
       "name": "test",
       "type": "User"
     },
     {
-      "id": 1,
       "name": "hellaaaa",
       "type": "Tag"
     },
     {
-      "id": 2,
       "name": "hellaa",
       "type": "Tag"
     },
     {
-      "id": 3,
       "name": "hellaaaaa",
       "type": "Tag"
     },
     {
-      "id": 4,
       "name": "hellaaa",
       "type": "Tag"
     },
     {
-      "id": 5,
       "url": "http://github.com/ShiratoriTentaa",
       "type": "Link"
     },
     {
-      "id": 6,
       "url": "http://github.com/ShiratoriTentaaa",
       "type": "Link"
     },
     {
-      "id": 7,
       "url": "http://github.com/ShiratoriTenta",
       "type": "Link"
     },
     {
-      "id": 8,
       "url": "http://unkoman.com",
       "type": "Link"
     }

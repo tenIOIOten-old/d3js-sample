@@ -9,54 +9,88 @@ class App extends Component {
   svg = null
   link = null
   node = null
+  label = null
+  simulation = null
   componentDidMount() {
     this.svg = d3.select("svg")
     const width = +this.svg.attr("width")
     const height = +this.svg.attr("height")
+    this.simulation = d3.forceSimulation()
+      .force("link", d3.forceLink().id(function (d, i) { return i; }))
+      .force("charge", d3.forceManyBody())
+      .force("center", d3.forceCenter(width / 2, height / 2));
 
-    const simulation = d3.forceSimulation()
-      .force("charge", d3.forceManyBody().strength(-200))
-      .force("link", d3.forceLink().id(function (d) { return d.id; }).distance(40))
-      .force("x", d3.forceX(width / 2))
-      .force("y", d3.forceY(height / 2))
-      .on("tick", this.ticked);
-
-    this.link = this.svg.selectAll(".link")
-    this.node = this.svg.selectAll(".node")
-
-    simulation.nodes(graph.nodes);
-    simulation.force("link").links(graph.links);
-
-    this.link = this.link
+    this.link = this.svg.append("g")
+      .attr("class", "links")
+      .selectAll("line")
       .data(graph.links)
       .enter().append("line")
-      .attr("class", "link");
 
-    this.node = this.node
+    this.node = this.svg.append("g")
+      .selectAll("g")
       .data(graph.nodes)
-      .enter().append("circle")
-      .attr("class", "node")
-      .attr("r", 6)
-      .style("fill", function (d) {
+      .enter().append("g")
+      .call(d3.drag()
+        .on("start", this.dragstarted)
+        .on("drag", this.dragged)
+        .on("end", this.dragended));
+
+    this.circles = this.node.append("circle")
+      .attr("r", 5)
+      .attr("class", "nodes")
+      .attr("fill", function (d) {
         switch (d.type) {
           case 'User':
-            return 'blue';
+            return 'green';
           case 'Tag':
-            return 'red';
+            return 'blue';
           case 'Link':
           default:
             return 'yellow';
         }
-      });
+      })
+
+    this.lables = this.node.append("text")
+      .text(function (d) {
+        return d.name;
+      })
+      .attr('x', 6)
+      .attr('y', 3);
+
+    this.simulation
+      .nodes(graph.nodes)
+      .on("tick", this.ticked);
+
+    this.simulation.force("link")
+      .links(graph.links);
   }
   ticked = () => {
-    this.link.attr("x1", function (d) { return d.source.x; })
+    this.link
+      .attr("x1", function (d) { return d.source.x; })
       .attr("y1", function (d) { return d.source.y; })
       .attr("x2", function (d) { return d.target.x; })
       .attr("y2", function (d) { return d.target.y; });
 
-    this.node.attr("cx", function (d) { return d.x; })
-      .attr("cy", function (d) { return d.y; });
+    this.node
+      .attr("transform", function (d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      })
+  }
+  dragstarted = (d) => {
+    if (!d3.event.active) this.simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+
+  dragged = (d) => {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
+
+  dragended = (d) => {
+    if (!d3.event.active) this.simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
   }
   render() {
     return (
